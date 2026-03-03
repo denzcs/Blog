@@ -2,7 +2,7 @@
     <div id="wrapper">
         <HeaderComponent />
 
-        <MenuComponent />
+        <MenuComponent :server="server" />
         <HomePage v-if="page == 'HomePage'" />
     </div>
     <FooterComponent />
@@ -19,7 +19,36 @@ export default {
     data() {
         return {
             page: 'HomePage',
+            API: 'http://127.0.0.1:8000/api/',
         };
+    },
+    methods: {
+        async server(route, method = 'GET', FormData = null) {
+            let myHeaders = new Headers();
+            myHeaders.append('Accept', 'application/json');
+            if (localStorage.getItem('token')) {
+                myHeaders.append(
+                    'Authorization',
+                    'Bearer ' + localStorage.getItem('token'),
+                );
+            }
+
+            let requestOptions = {
+                method: method,
+                headers: myHeaders,
+                redirect: 'follow',
+            };
+
+            if (method != 'GET') {
+                requestOptions.body = FormData;
+            }
+
+            return await fetch(api + route, requestOptions).then((response) => {
+                return response.json();
+            });
+            // .then((result) => console.log(result))
+            // .catch((error) => console.error(error));
+        },
     },
     components: {
         HeaderComponent,
