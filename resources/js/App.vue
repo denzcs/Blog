@@ -2,7 +2,11 @@
     <div id="wrapper">
         <HeaderComponent />
 
-        <MenuComponent :server="server" />
+        <MenuComponent
+            :server="server"
+            :isUser="isUser"
+            :successUser="successUser"
+        />
         <HomePage v-if="page == 'HomePage'" />
     </div>
     <FooterComponent />
@@ -20,9 +24,14 @@ export default {
         return {
             page: 'HomePage',
             API: 'http://127.0.0.1:8000/api/',
+            isUser: false,
         };
     },
     methods: {
+        successUser(token) {
+            localStorage.setItem('token', token);
+            this.isUser = true;
+        },
         async server(route, method = 'GET', FormData = null) {
             let myHeaders = new Headers();
             myHeaders.append('Accept', 'application/json');
@@ -43,9 +52,11 @@ export default {
                 requestOptions.body = FormData;
             }
 
-            return await fetch(api + route, requestOptions).then((response) => {
-                return response.json();
-            });
+            return await fetch(this.API + route, requestOptions).then(
+                (response) => {
+                    return response.json();
+                },
+            );
             // .then((result) => console.log(result))
             // .catch((error) => console.error(error));
         },

@@ -2,7 +2,7 @@
     <section id="menu">
         <!-- Actions -->
         <section>
-            <ul class="actions vertical">
+            <ul class="actions vertical" v-if="!isUser">
                 <li><h3>Login</h3></li>
                 <li>
                     <form action="?" method="post">
@@ -23,7 +23,13 @@
                         />
                     </form>
                 </li>
-                <RegisterComponent :server="server" />
+                <RegisterComponent
+                    :server="server"
+                    :successUser="successUser"
+                />
+            </ul>
+            <ul v-else>
+                <li><a href="">Создать пост</a></li>
             </ul>
         </section>
     </section>
@@ -34,7 +40,7 @@ import RegisterComponent from './RegisterComponent.vue';
 
 export default {
     name: 'MenuComponent',
-    props: ['server'],
+    props: ['server', 'isUser', 'successUser'],
     components: {
         RegisterComponent,
     },

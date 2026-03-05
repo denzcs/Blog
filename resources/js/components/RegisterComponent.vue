@@ -1,27 +1,67 @@
 <template>
     <li><h3>Registration</h3></li>
-    <li><input type="text" name="neme" placeholder="Name" v-model="name"/><br />
-        <input type="text" name="neme" placeholder="Username" v-model="username"/><br />
-        <input type="password" name="neme" placeholder="Password" v-model="password"/><br />
-        <input type="file" name="file" /><br /><br />
-        <button type="button" class="button big fit" @click="register">Регистрация</button>
+    <li>
+        <input type="text" placeholder="Name" v-model="name" /><br />
+        <p class="red" v-if="errors.name">
+            {{ errors.name.join('. ') }}
+        </p>
+
+        <input type="text" placeholder="Username" v-model="username" /><br />
+        <p class="red" v-if="errors.username">
+            {{ errors.username.join('. ') }}
+        </p>
+        <input
+            type="password"
+            placeholder="Password"
+            v-model="password"
+        /><br />
+        <p class="red" v-if="errors.password">
+            {{ errors.password.join('. ') }}
+        </p>
+        <input type="file" name="file" id="avatar"/><br />
+        <p class="red" v-if="errors.avatar">
+            {{ errors.avatar.join('. ') }}
+        </p>
+        <br />
+        <button type="button" class="button big fit" @click="register()">
+            Регистрация
+        </button>
     </li>
 </template>
 <script>
 export default {
     name: 'RegisterComponent',
-    daga(){
-        return{
+    data() {
+        return {
             name: null,
             username: null,
             password: null,
-        }
+            errors: {},
+        };
     },
-    props: ['server'],
+    props: ['server','successUser'],
     methods: {
-        register(){
-            
-        }
-    }
+        register() {
+            let formdata = new FormData();
+            if (this.name) formdata.append('name', this.name);
+            if (this.username) formdata.append('username', this.username);
+            if (this.password) formdata.append('password', this.password);
+            let avatar = document.querySelector('#avatar');
+            if(avatar.files[0]){
+                formdata.append('avatar', avatar.files[0]);
+            }
+            this.server('register', 'POST', formdata)
+                .then((result) => {
+                    console.log(result);
+                    if (result.errors) {
+                        this.errors = result.errors;
+                    }
+                    if(result.token){
+                        this.successUser(result.token);
+                    }
+                })
+                .catch((error) => console.error(error));
+        },
+    },
 };
 </script>
