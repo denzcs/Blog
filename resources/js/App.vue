@@ -13,7 +13,7 @@
             :changePage="changePage"
         />
         <HomePage v-if="page == 'HomePage'" />
-        <PostAdd v-if="page == 'PostAdd'" />
+        <PostAdd v-if="page == 'PostAdd'" :server="server" />
     </div>
     <FooterComponent />
 </template>
