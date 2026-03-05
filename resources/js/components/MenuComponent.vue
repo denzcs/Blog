@@ -29,20 +29,22 @@
                 />
             </ul>
             <ul v-else>
-                <li><a href="">Создать пост</a></li>
+                <li><a href="" @click.prevent="changePage('PostAdd')">Создать пост</a></li>
             </ul>
         </section>
     </section>
 </template>
 
 <script>
+import PostAdd from '@/pages/PostAdd.vue';
 import RegisterComponent from './RegisterComponent.vue';
 
 export default {
     name: 'MenuComponent',
-    props: ['server', 'isUser', 'successUser'],
+    props: ['server', 'isUser', 'successUser', 'changePage'],
     components: {
         RegisterComponent,
+        PostAdd,
     },
 };
 </script>

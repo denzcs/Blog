@@ -1,13 +1,19 @@
 <template>
     <div id="wrapper">
-        <HeaderComponent />
+        <HeaderComponent
+            :user="user"
+            :isUser="isUser"
+            :PUBLIC="PUBLIC"
+        />
 
         <MenuComponent
             :server="server"
             :isUser="isUser"
             :successUser="successUser"
+            :changePage="changePage"
         />
         <HomePage v-if="page == 'HomePage'" />
+        <PostAdd v-if="page == 'PostAdd'" />
     </div>
     <FooterComponent />
 </template>
@@ -17,6 +23,7 @@ import FooterComponent from './components/FooterComponent.vue';
 import HeaderComponent from './components/HeaderComponent.vue';
 import MenuComponent from './components/MenuComponent.vue';
 import HomePage from './pages/HomePage.vue';
+import PostAdd from './pages/PostAdd.vue';
 
 export default {
     name: 'App',
@@ -24,13 +31,33 @@ export default {
         return {
             page: 'HomePage',
             API: 'http://127.0.0.1:8000/api/',
+            PUBLIC: 'http://127.0.0.1:8000/storage/',
             isUser: false,
+            user: {},
         };
     },
     methods: {
+        changePage(page) {
+            this.page = page;
+        },
+        getUser() {
+            this.server('user')
+                .then((result) => {
+                    console.log(result);
+                    this.user = result;
+                    this.isUser = true;
+                })
+                .catch((error) => console.error(error));
+        },
         successUser(token) {
             localStorage.setItem('token', token);
             this.isUser = true;
+            this.getUser();
+        },
+        logout() {
+            localStorage.removeItem('token');
+            this.user = {};
+            this.isUser = false;
         },
         async server(route, method = 'GET', FormData = null) {
             let myHeaders = new Headers();
@@ -54,6 +81,9 @@ export default {
 
             return await fetch(this.API + route, requestOptions).then(
                 (response) => {
+                    if (response.status == 401) {
+                        this.logout();
+                    }
                     return response.json();
                 },
             );
@@ -66,6 +96,12 @@ export default {
         MenuComponent,
         FooterComponent,
         HomePage,
+        PostAdd,
+    },
+    mounted() {
+        if (localStorage.getItem('token')) {
+            this.getUser();
+        }
     },
 };
 </script>
