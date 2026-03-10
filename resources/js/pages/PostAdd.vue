@@ -41,7 +41,7 @@
 <script>
 export default {
     name: 'PostAdd',
-    props: ['server'],
+    props: ['server', 'changePage'],
     data() {
         return {
             name: null,
@@ -68,9 +68,9 @@ export default {
                     if (result.errors) {
                         this.errors = result.errors;
                     }
-                    // if (result.token) {
-                    //     this.successUser(result.token);
-                    // }
+                    if (result.id) {
+                        this.changePage('SinglePage', result.id);
+                    }
                 })
                 .catch((error) => console.error(error));
         },

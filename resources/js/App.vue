@@ -1,10 +1,6 @@
 <template>
     <div id="wrapper">
-        <HeaderComponent
-            :user="user"
-            :isUser="isUser"
-            :PUBLIC="PUBLIC"
-        />
+        <HeaderComponent :user="user" :isUser="isUser" :PUBLIC="PUBLIC" />
 
         <MenuComponent
             :server="server"
@@ -13,7 +9,17 @@
             :changePage="changePage"
         />
         <HomePage v-if="page == 'HomePage'" />
-        <PostAdd v-if="page == 'PostAdd'" :server="server" />
+        <PostAdd
+            v-if="page == 'PostAdd'"
+            :server="server"
+            :changePage="changePage"
+        />
+        <SinglePage
+            v-if="page == 'SinglePage'"
+            :server="server"
+            :changePage="changePage"
+            :pageId="pageId"
+        />
     </div>
     <FooterComponent />
 </template>
@@ -24,12 +30,14 @@ import HeaderComponent from './components/HeaderComponent.vue';
 import MenuComponent from './components/MenuComponent.vue';
 import HomePage from './pages/HomePage.vue';
 import PostAdd from './pages/PostAdd.vue';
+import SinglePage from './pages/SinglePage.vue';
 
 export default {
     name: 'App',
     data() {
         return {
             page: 'HomePage',
+            pageId: null,
             API: 'http://127.0.0.1:8000/api/',
             PUBLIC: 'http://127.0.0.1:8000/storage/',
             isUser: false,
@@ -37,8 +45,9 @@ export default {
         };
     },
     methods: {
-        changePage(page) {
+        changePage(page, pageId = null) {
             this.page = page;
+            this.pageId = pageId;
         },
         getUser() {
             this.server('user')
@@ -97,6 +106,7 @@ export default {
         FooterComponent,
         HomePage,
         PostAdd,
+        SinglePage,
     },
     mounted() {
         if (localStorage.getItem('token')) {
