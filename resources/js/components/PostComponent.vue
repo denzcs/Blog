@@ -11,7 +11,7 @@
                 >
                 <a href="#" class="author"
                     ><span class="name">Jane Doe</span
-                    ><img src="images/avatar.jpg" alt=""
+                    ><img src="images/avatar,jpg" alt=""
                 /></a>
             </div>
         </header>
