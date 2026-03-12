@@ -1,9 +1,9 @@
 <template>
     <li><h3>Registration</h3></li>
     <li>
-        <input type="text" placeholder="Name" v-model="name" /><br />
-        <p class="red" v-if="errors.name">
-            {{ errors.name.join('. ') }}
+        <input type="text" placeholder="fullname" v-model="fullname" /><br />
+        <p class="red" v-if="errors.fullname">
+            {{ errors.fullname.join('. ') }}
         </p>
 
         <input type="text" placeholder="Username" v-model="username" /><br />
@@ -33,7 +33,7 @@ export default {
     name: 'RegisterComponent',
     data() {
         return {
-            name: null,
+            fullname: null,
             username: null,
             password: null,
             errors: {},
@@ -43,7 +43,7 @@ export default {
     methods: {
         register() {
             let formdata = new FormData();
-            if (this.name) formdata.append('name', this.name);
+            if (this.fullname) formdata.append('name', this.fullname);
             if (this.username) formdata.append('username', this.username);
             if (this.password) formdata.append('password', this.password);
             let avatar = document.querySelector('#avatar');

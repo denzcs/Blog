@@ -4,21 +4,23 @@
         <article class="post">
             <header>
                 <div class="title">
-                    <h2><a href="#">{{name}}</a></h2>
+                    <h2>
+                        <a href="#">{{ post.title }}</a>
+                    </h2>
                     <p>{{ post.subtitle }}</p>
                 </div>
                 <div class="meta">
-                    <time class="published" datetime="2015-11-01"
-                        >{{ post.created_at }}</time
-                    >
+                    <time class="published" datetime="2015-11-01">{{
+                        post.created_at
+                    }}</time>
                     <a href="#" class="author"
-                        ><span class="name">user id: {{ post.user_id }}</span
-                        ><img src="images/avatar.jpg" alt=""
+                        ><span class="name">{{ post.user.name }}</span
+                        ><img :src="PUBLIC + post.user.avatar" alt=""
                     /></a>
                 </div>
             </header>
             <span class="image featured"
-                ><img :src="PUBLIC+post.photo" alt=""
+                ><img :src="PUBLIC + post.photo" alt=""
             /></span>
             <p>
                 {{ post.anons }}
@@ -85,7 +87,7 @@
 </template>
 <script>
 export default {
-    props: ['server', 'pageId'],
+    props: ['server', 'pageId', 'PUBLIC'],
     name: 'SinglePage',
     data() {
         return {
@@ -93,17 +95,14 @@ export default {
         };
     },
     mounted() {
-        this.server('post/'+this.pageId)
-                .then((result) => {
-                    console.log(result);
-                    if (result.errors) {
-                        this.errors = result.errors;
-                    }
-                    if (result.id) {
-                        this.changePage('SinglePage', result.id);
-                    }
-                })
-                .catch((error) => console.error(error));
+        this.server('post/' + this.pageId)
+            .then((result) => {
+                this.post = result;
+                if (result.id) {
+                    this.changePage('SinglePage', result.id);
+                }
+            })
+            .catch((error) => console.error(error));
     },
 };
 </script>

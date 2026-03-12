@@ -19,6 +19,7 @@
             :server="server"
             :changePage="changePage"
             :pageId="pageId"
+            :PUBLIC="PUBLIC"
         />
     </div>
     <FooterComponent />

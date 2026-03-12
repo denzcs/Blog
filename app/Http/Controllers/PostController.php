@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -33,7 +34,7 @@ class PostController extends Controller
     {
         $post = new Post();
         $post->user_id = Auth::id();
-        $post->name = $request -> name;
+        $post->title = $request -> title;
         $post->subtitle = $request -> subtitle;
         $post->anons = $request -> anons;
         $post->content = $request -> content;
@@ -46,8 +47,9 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function     show($post)
     {
+        $post = Post::with('user')->findOrFail($post);
         return $post;
     }
 

@@ -2,9 +2,9 @@
     <div id="main">
         <article class="post">
             <h1>Add Post</h1>
-            <input type="text" placeholder="Post name" v-model="name" />
-            <p class="red" v-if="errors.name">
-                {{ errors.name.join('. ') }}
+            <input type="text" placeholder="Post name" v-model="title" />
+            <p class="red" v-if="errors.title">
+                {{ errors.title.join('. ') }}
             </p>
             <br />
             <input type="text" placeholder="Subtitle" v-model="subtitle" />
@@ -40,11 +40,11 @@
 </template>
 <script>
 export default {
-    name: 'PostAdd',
+    title: 'PostAdd',
     props: ['server', 'changePage'],
     data() {
         return {
-            name: null,
+            title: null,
             subtitle: null,
             anons: null,
             content: null,
@@ -54,7 +54,7 @@ export default {
     methods: {
         postadd() {
             let formdata = new FormData();
-            if (this.name) formdata.append('name', this.name);
+            if (this.title) formdata.append('title', this.title);
             if (this.subtitle) formdata.append('subtitle', this.subtitle);
             if (this.anons) formdata.append('anons', this.anons);
             if (this.content) formdata.append('content', this.content);
