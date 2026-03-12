@@ -1,5 +1,5 @@
 <template>
-    <div id="main">
+    <div id="main" v-if="post">
         <!-- Post -->
         <article class="post">
             <header>
@@ -44,34 +44,20 @@
             <section class="comments">
                 <h3>Comments</h3>
                 <form>
-                    <textarea></textarea><br />
-                    <input
-                        type="submit"
+                    <textarea v-model="comment"></textarea><br />
+                    <p class="red" v-if="errors.comment">
+                        {{ errors.comment.join('. ') }}
+                    </p>
+                    <button
+                        type="button"
                         class="button big fit"
                         value="Add Comment"
-                    />
+                        @click="addComment"
+                    >
+                        Add Comment
+                    </button>
                 </form>
             </section>
-            <article class="comment">
-                <div class="comment-autor">
-                    <a href="#"><img src="images/avatar.jpg" /></a>
-                    <a href="#">User</a>
-                </div>
-                <p>
-                    Mauris neque quam, fermentum ut nisl vitae, convallis
-                    maximus nisl. Sed mattis nunc id lorem euismod placerat.
-                </p>
-            </article>
-            <article class="comment">
-                <div class="comment-autor">
-                    <a href="#"><img src="images/avatar.jpg" /></a>
-                    <a href="#">User</a>
-                </div>
-                <p>
-                    Mauris neque quam, fermentum ut nisl vitae, convallis
-                    maximus nisl. Sed mattis nunc id lorem euismod placerat.
-                </p>
-            </article>
             <article class="comment">
                 <div class="comment-autor">
                     <a href="#"><img src="images/avatar.jpg" /></a>
@@ -87,22 +73,43 @@
 </template>
 <script>
 export default {
-    props: ['server', 'pageId', 'PUBLIC'],
+    props: ['server', 'pageId', 'PUBLIC','changePage'],
     name: 'SinglePage',
     data() {
         return {
-            post: {},
+            errors: {},
+            post: null,
+            comment: null,
         };
     },
     mounted() {
-        this.server('post/' + this.pageId)
-            .then((result) => {
-                this.post = result;
-                if (result.id) {
-                    this.changePage('SinglePage', result.id);
-                }
-            })
-            .catch((error) => console.error(error));
+        this.getPost();
+    },
+    methods: {
+        getPost() {
+            this.server('post/' + this.pageId)
+                .then((result) => {
+                    this.post = result;
+                    if (result.id) {
+                        this.changePage('SinglePage', result.id);
+                    }
+                })
+                .catch((error) => console.error(error));
+        },
+        addComment() {
+            let formdata = new FormData();
+            if (this.comment) formdata.append('comment', this.comment);
+            this.server('comment/' + this.pageId, 'POST', formdata)
+                .then((result) => {
+                    if (result.errors) {
+                        this.errors = result.errors;
+                    } else {
+                        console.log(result);
+                        this.getPost();
+                    }
+                })
+                .catch((error) => console.error(error));
+        },
     },
 };
 </script>

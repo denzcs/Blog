@@ -49,7 +49,7 @@ class PostController extends Controller
      */
     public function     show($post)
     {
-        $post = Post::with('user')->findOrFail($post);
+        $post = Post::with('user', 'comments')->findOrFail($post);
         return $post;
     }
 
