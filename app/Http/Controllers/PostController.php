@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -49,8 +50,9 @@ class PostController extends Controller
      */
     public function     show($post)
     {
-        $post = Post::with('user', 'comments')->findOrFail($post);
-        return $post;
+        $post = Post::with('user')->findOrFail($post);
+        $comments = Comment::where('post_id', $post->id)->with('user')->get();
+        return response()->json(['post' => $post, 'comments' => $comments]);
     }
 
     /**

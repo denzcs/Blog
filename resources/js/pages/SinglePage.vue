@@ -30,7 +30,7 @@
             </p>
             <footer>
                 <ul class="stats">
-                    <li><a href="#">Edit</a></li>
+                    <li><a href="#" @click.prevent="changePage('PostAdd', post.id)">Edit</a></li>
                     <li><a href="#" class="red">Delete</a></li>
                     <li><a href="#" class="red">Blocked</a></li>
                     <li><a href="#" class="icon fa-heart">28</a></li>
@@ -58,14 +58,13 @@
                     </button>
                 </form>
             </section>
-            <article class="comment">
+            <article class="comment" v-for="value in comments">
                 <div class="comment-autor">
-                    <a href="#"><img src="images/avatar.jpg" /></a>
-                    <a href="#">User</a>
+                    <a href="#"><img :src="PUBLIC + value.user.avatar" /></a>
+                    <a href="#">{{ value.user.name }}</a>
                 </div>
                 <p>
-                    Mauris neque quam, fermentum ut nisl vitae, convallis
-                    maximus nisl. Sed mattis nunc id lorem euismod placerat.
+                    {{ value.comment }}
                 </p>
             </article>
         </div>
@@ -73,11 +72,12 @@
 </template>
 <script>
 export default {
-    props: ['server', 'pageId', 'PUBLIC','changePage'],
+    props: ['server', 'pageId', 'PUBLIC', 'changePage'],
     name: 'SinglePage',
     data() {
         return {
             errors: {},
+            comments: [],
             post: null,
             comment: null,
         };
@@ -89,7 +89,8 @@ export default {
         getPost() {
             this.server('post/' + this.pageId)
                 .then((result) => {
-                    this.post = result;
+                    this.post = result.post;
+                    this.comments = result.comments;
                     if (result.id) {
                         this.changePage('SinglePage', result.id);
                     }
