@@ -35,14 +35,14 @@ class PostController extends Controller
     {
         $post = new Post();
         $post->user_id = Auth::id();
-        $post->title = $request -> title;
-        $post->subtitle = $request -> subtitle;
-        $post->anons = $request -> anons;
-        $post->content = $request -> content;
-        $path = Storage::disk("public")->putFile('/photo',$request->file("photo"));
+        $post->title = $request->title;
+        $post->subtitle = $request->subtitle;
+        $post->anons = $request->anons;
+        $post->content = $request->content;
+        $path = Storage::disk("public")->putFile('/photo', $request->file("photo"));
         $post->photo = $path;
         $post->save();
-        return response()->json(["id"=>$post->id]);
+        return response()->json(["id" => $post->id]);
     }
 
     /**
@@ -52,7 +52,10 @@ class PostController extends Controller
     {
         $post = Post::with('user')->findOrFail($post);
         $comments = Comment::where('post_id', $post->id)->with('user')->get();
-        return response()->json(['post' => $post, 'comments' => $comments]);
+        // if(Auth::check()){
+
+        // }
+        return response()->json(['post' => $post, 'comments' => $comments, 'isAdmin'=>$isAdmin]);
     }
 
     /**
@@ -68,7 +71,16 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        $post->title = $request->title;
+        $post->subtitle = $request->subtitle;
+        $post->anons = $request->anons;
+        $post->content = $request->content;
+        if ($request->has("photo")) {
+            $path = Storage::disk("public")->putFile('/photo', $request->file("photo"));
+            $post->photo = $path;
+        } 
+        $post->save();
+        return response()->json(["id" => $post->id]);
     }
 
     /**

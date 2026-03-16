@@ -80,6 +80,7 @@ export default {
             comments: [],
             post: null,
             comment: null,
+            isAdmin: false,
         };
     },
     mounted() {
@@ -105,8 +106,9 @@ export default {
                     if (result.errors) {
                         this.errors = result.errors;
                     } else {
-                        console.log(result);
                         this.getPost();
+                        this.comment = null;
+                        this.isAdmin = result.isAdmin;
                     }
                 })
                 .catch((error) => console.error(error));

@@ -13,6 +13,8 @@
             v-if="page == 'PostAdd'"
             :server="server"
             :changePage="changePage"
+            :pageId="pageId"
+            :PUBLIC="PUBLIC"
         />
         <SinglePage
             v-if="page == 'SinglePage'"
@@ -37,8 +39,8 @@ export default {
     name: 'App',
     data() {
         return {
-            page: 'HomePage',
-            pageId: null,
+            page: localStorage.getItem('page') || 'HomePage',
+            pageId: localStorage.getItem('pageId') || 'pageId',
             API: 'http://127.0.0.1:8000/api/',
             PUBLIC: 'http://127.0.0.1:8000/storage/',
             isUser: false,
@@ -49,6 +51,8 @@ export default {
         changePage(page, pageId = null) {
             this.page = page;
             this.pageId = pageId;
+            localStorage.setItem('page', this.page);
+            localStorage.setItem('pageId', this.pageId);
         },
         getUser() {
             this.server('user')

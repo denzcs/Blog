@@ -1,7 +1,7 @@
 <template>
     <div id="main">
         <article class="post">
-            <h1>Add Post</h1>
+            <h1>{{ pageId ? 'Edit' : 'Add' }} Post</h1>
             <input type="text" placeholder="Post name" v-model="title" />
             <p class="red" v-if="errors.title">
                 {{ errors.title.join('. ') }}
@@ -33,25 +33,46 @@
                 class="button big fit"
                 value="Add Post"
             >
-                Add post
+                {{ pageId ? 'Edit' : 'Add' }} post
             </button>
         </article>
+        <div v-if="pageId">
+            <img :src="PUBLIC+photo" alt="">
+        </div>
     </div>
 </template>
 <script>
 export default {
     title: 'PostAdd',
-    props: ['server', 'changePage'],
+    props: ['server', 'changePage', 'pageId', 'PUBLIC'],
     data() {
         return {
+            post: null,
             title: null,
             subtitle: null,
             anons: null,
             content: null,
+            photo: null,
             errors: {},
         };
     },
+    mounted() {
+        if (this.pageId) {
+            this.getPost();
+        }
+    },
     methods: {
+        getPost() {
+            this.server('post/' + this.pageId)
+                .then((result) => {
+                    this.title = result.post.title;
+                    this.subtitle = result.post.subtitle;
+                    this.anons = result.post.anons;
+                    this.content = result.post.content;
+                    this.photo = result.post.photo; 
+                })
+                .catch((error) => console.error(error));
+        },
         postadd() {
             let formdata = new FormData();
             if (this.title) formdata.append('title', this.title);
@@ -62,7 +83,11 @@ export default {
             if (photo.files[0]) {
                 formdata.append('photo', photo.files[0]);
             }
-            this.server('postadd', 'POST', formdata)
+            this.server(
+                this.pageId ? 'post/' + this.pageId : 'postadd',
+                'POST',
+                formdata,
+            )
                 .then((result) => {
                     console.log(result);
                     if (result.errors) {
