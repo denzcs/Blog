@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+use function Laravel\Prompts\alert;
+
 class PostController extends Controller
 {
     /**
@@ -48,14 +50,17 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function     show($post)
+    public function show($post)
     {
         $post = Post::with('user')->findOrFail($post);
         $comments = Comment::where('post_id', $post->id)->with('user')->get();
-        // if(Auth::check()){
-
-        // }
-        return response()->json(['post' => $post, 'comments' => $comments, 'isAdmin'=>$isAdmin]);
+        $isAdmin = false;
+        if (Auth::check()) {
+            if (Auth::user()->id == $post->user_id || Auth::user()->role == 'admin') {
+                $isAdmin = true;
+            }
+        }
+        return response()->json(['post' => $post, 'comments' => $comments, 'isAdmin' => $isAdmin]);
     }
 
     /**
@@ -78,11 +83,13 @@ class PostController extends Controller
         if ($request->has("photo")) {
             $path = Storage::disk("public")->putFile('/photo', $request->file("photo"));
             $post->photo = $path;
-        } 
+        }
         $post->save();
         return response()->json(["id" => $post->id]);
     }
-
+    public function postUser(User $user){
+        return Post::where("user_id",$user->id)->with("user")->withCount("comments","likes")->get();
+    }
     /**
      * Remove the specified resource from storage.
      */

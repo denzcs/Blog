@@ -23,6 +23,13 @@
             :pageId="pageId"
             :PUBLIC="PUBLIC"
         />
+        <UserPage
+            v-if="page == 'UserPage'"
+            :server="server"
+            :changePage="changePage"
+            :pageId="pageId"
+            :PUBLIC="PUBLIC"
+        />
     </div>
     <FooterComponent />
 </template>
@@ -34,6 +41,7 @@ import MenuComponent from './components/MenuComponent.vue';
 import HomePage from './pages/HomePage.vue';
 import PostAdd from './pages/PostAdd.vue';
 import SinglePage from './pages/SinglePage.vue';
+import UserPage from './pages/UserPage.vue';
 
 export default {
     name: 'App',
@@ -57,9 +65,9 @@ export default {
         getUser() {
             this.server('user')
                 .then((result) => {
-                    console.log(result);
                     this.user = result;
                     this.isUser = true;
+                    console.log(this.isUser);
                 })
                 .catch((error) => console.error(error));
         },
@@ -112,6 +120,7 @@ export default {
         HomePage,
         PostAdd,
         SinglePage,
+        UserPage,
     },
     mounted() {
         if (localStorage.getItem('token')) {

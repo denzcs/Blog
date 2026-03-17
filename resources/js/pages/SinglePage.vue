@@ -13,7 +13,7 @@
                     <time class="published" datetime="2015-11-01">{{
                         post.created_at
                     }}</time>
-                    <a href="#" class="author"
+                    <a href="#" @click.prevent="changePage('UserPage', post.user_id)" class="author"
                         ><span class="name">{{ post.user.name }}</span
                         ><img :src="PUBLIC + post.user.avatar" alt=""
                     /></a>
@@ -30,9 +30,16 @@
             </p>
             <footer>
                 <ul class="stats">
-                    <li><a href="#" @click.prevent="changePage('PostAdd', post.id)">Edit</a></li>
-                    <li><a href="#" class="red">Delete</a></li>
-                    <li><a href="#" class="red">Blocked</a></li>
+                    <li>
+                        <a
+                            href="#"
+                            v-if="isAdmin"
+                            @click.prevent="changePage('PostAdd', post.id)"
+                            >Edit</a
+                        >
+                    </li>
+                    <li v-if="isAdmin"><a href="#" class="red">Delete</a></li>
+                    <li v-if="isAdmin"><a href="#" class="red">Blocked</a></li>
                     <li><a href="#" class="icon fa-heart">28</a></li>
                     <li><a href="#" class="icon fa-comment">128</a></li>
                 </ul>
@@ -43,7 +50,7 @@
         <div class="post">
             <section class="comments">
                 <h3>Comments</h3>
-                <form>
+                <form v-if="isUser">
                     <textarea v-model="comment"></textarea><br />
                     <p class="red" v-if="errors.comment">
                         {{ errors.comment.join('. ') }}
@@ -60,8 +67,8 @@
             </section>
             <article class="comment" v-for="value in comments">
                 <div class="comment-autor">
-                    <a href="#"><img :src="PUBLIC + value.user.avatar" /></a>
-                    <a href="#">{{ value.user.name }}</a>
+                    <a href="#"  @click.prevent="changePage('UserPage', post.user_id)"><img :src="PUBLIC + value.user.avatar" /></a>
+                    <a href="#"  @click.prevent="changePage('UserPage', post.user_id)">{{ value.user.name }}</a>
                 </div>
                 <p>
                     {{ value.comment }}
@@ -72,7 +79,7 @@
 </template>
 <script>
 export default {
-    props: ['server', 'pageId', 'PUBLIC', 'changePage'],
+    props: ['server', 'pageId', 'PUBLIC', 'changePage', 'isUser'],
     name: 'SinglePage',
     data() {
         return {
@@ -81,17 +88,22 @@ export default {
             post: null,
             comment: null,
             isAdmin: false,
+            isUser: false,
         };
     },
     mounted() {
         this.getPost();
+        if(localStorage.getItem('token')){
+            this.isUser = localStorage.getItem('token');
+        }
     },
     methods: {
         getPost() {
-            this.server('post/' + this.pageId)
+            this.server((localStorage.getItem('token') ? 'postUser/' : 'post/') + this.pageId)
                 .then((result) => {
                     this.post = result.post;
                     this.comments = result.comments;
+                    this.isAdmin = result.isAdmin;
                     if (result.id) {
                         this.changePage('SinglePage', result.id);
                     }
@@ -108,7 +120,6 @@ export default {
                     } else {
                         this.getPost();
                         this.comment = null;
-                        this.isAdmin = result.isAdmin;
                     }
                 })
                 .catch((error) => console.error(error));
