@@ -1,6 +1,11 @@
 <template>
     <div id="wrapper">
-        <HeaderComponent :user="user" :isUser="isUser" :PUBLIC="PUBLIC" />
+        <HeaderComponent
+            :user="user"
+            :isUser="isUser"
+            :PUBLIC="PUBLIC"
+            :changePage="changePage"
+        />
 
         <MenuComponent
             :server="server"
@@ -8,7 +13,12 @@
             :successUser="successUser"
             :changePage="changePage"
         />
-        <HomePage v-if="page == 'HomePage'" />
+        <HomePage
+            v-if="page == 'HomePage'"
+            :server="server"
+            :changePage="changePage"
+            :PUBLIC="PUBLIC"
+        />
         <PostAdd
             v-if="page == 'PostAdd'"
             :server="server"
@@ -29,6 +39,7 @@
             :changePage="changePage"
             :pageId="pageId"
             :PUBLIC="PUBLIC"
+            :PostComponent="PostComponent"
         />
     </div>
     <FooterComponent />

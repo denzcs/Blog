@@ -88,7 +88,10 @@ class PostController extends Controller
         return response()->json(["id" => $post->id]);
     }
     public function postUser(User $user){
-        return Post::where("user_id",$user->id)->with("user")->withCount("comments","likes")->get();
+        return Post::where("user_id",$user->id)->with("user")->withCount("comments","likes")->paginate(2);
+    }
+    public function getPosts(){
+        return Post::with("user")->withCount("comments","likes")->paginate(2);
     }
     /**
      * Remove the specified resource from storage.

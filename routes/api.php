@@ -18,4 +18,5 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::post("/register", [UserController::class, "register"]);
 Route::get("/post/{post}", [PostController::class, "show"]);
-Route::get("/postUser/{user}", [PostController::class, "postUser"]);
+Route::get("/posts", [PostController::class, "getPosts"]);
+Route::get("/userPage/{user}", [PostController::class, "postUser"]);
