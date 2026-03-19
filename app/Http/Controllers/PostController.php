@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Comment;
+use App\Models\Like;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -52,15 +53,21 @@ class PostController extends Controller
      */
     public function show($post)
     {
-        $post = Post::with('user')->findOrFail($post);
+        $post = Post::with('user')->withCount('likes', 'comments')->findOrFail($post);
         $comments = Comment::where('post_id', $post->id)->with('user')->get();
+        $isLike = false;
         $isAdmin = false;
         if (Auth::check()) {
             if (Auth::user()->id == $post->user_id || Auth::user()->role == 'admin') {
                 $isAdmin = true;
             }
+            $like = Like::where("post_id",$post->id)->where("user_id", Auth::id())->first();
+            if ($like) {
+                $isLike = true;
+            }
         }
-        return response()->json(['post' => $post, 'comments' => $comments, 'isAdmin' => $isAdmin]);
+
+        return response()->json(['post' => $post, 'comments' => $comments, 'isAdmin' => $isAdmin, 'isLike' => $isLike]);
     }
 
     /**
@@ -87,17 +94,19 @@ class PostController extends Controller
         $post->save();
         return response()->json(["id" => $post->id]);
     }
-    public function postUser(User $user){
-        return Post::where("user_id",$user->id)->with("user")->withCount("comments","likes")->paginate(2);
+    public function postUser(User $user)
+    {
+        return Post::where("user_id", $user->id)->orderBy('created_at', 'desc')->with("user")->withCount("comments", "likes")->paginate(2);
     }
-    public function getPosts(){
-        return Post::with("user")->withCount("comments","likes")->paginate(2);
+    public function getPosts()
+    {
+        return Post::with("user")->orderBy('created_at', 'desc')->withCount("comments", "likes")->paginate(2);
     }
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function getSideBarPosts()
     {
-        //
+        return Post::with('user')->orderBy('likes', 'desc')->orderBy('comments', 'desc')->get();
     }
 }

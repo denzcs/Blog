@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Like;
 use App\Http\Requests\StoreLikeRequest;
 use App\Http\Requests\UpdateLikeRequest;
+use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 
 class LikeController extends Controller
 {
@@ -27,9 +29,22 @@ class LikeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreLikeRequest $request)
+    public function store(Post $post)
     {
-        //
+        if (Auth::user()) {
+            $like = Like::where('post_id', $post->id)->where('user_id', Auth::id())->first();
+            if ($like) {
+                $like->delete();
+                $isLike = false;
+            } else {
+                Like::create(['user_id' => Auth::id(), 'post_id' => $post->id]);
+                $isLike = true;
+            }
+            return response()->json(['like_count' => Like::where('post_id', $post->id)->where('user_id', Auth::id())->count()]);
+        }
+        else{
+            return response()->json(['message']);
+        }
     }
 
     /**

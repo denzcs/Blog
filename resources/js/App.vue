@@ -12,12 +12,14 @@
             :isUser="isUser"
             :successUser="successUser"
             :changePage="changePage"
+            :logout="logout"
         />
         <HomePage
             v-if="page == 'HomePage'"
             :server="server"
             :changePage="changePage"
             :PUBLIC="PUBLIC"
+            :created_at="created_at"
         />
         <PostAdd
             v-if="page == 'PostAdd'"
@@ -32,6 +34,7 @@
             :changePage="changePage"
             :pageId="pageId"
             :PUBLIC="PUBLIC"
+            :created_at="created_at"
         />
         <UserPage
             v-if="page == 'UserPage'"
@@ -40,6 +43,7 @@
             :pageId="pageId"
             :PUBLIC="PUBLIC"
             :PostComponent="PostComponent"
+            :created_at="created_at"
         />
     </div>
     <FooterComponent />
@@ -67,6 +71,14 @@ export default {
         };
     },
     methods: {
+        created_at(data){
+            let day = data.split('T')[0].split('-')[2];
+            let month = data.split('T')[0].split('-')[1];
+            let year = data.split('T')[0].split('-')[0];
+            let time = data.split('.')[0].split('T')[1];
+            this.data = day+'.'+month+'.'+year+' '+time;
+            return this.data;
+        },
         changePage(page, pageId = null) {
             this.page = page;
             this.pageId = pageId;

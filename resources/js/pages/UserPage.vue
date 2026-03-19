@@ -5,6 +5,8 @@
                 :post="post"
                 :PUBLIC="PUBLIC"
                 :changePage="changePage"
+                :server="server"
+                :created_at="created_at"
             />
         </template>
         <!-- Pagination -->
@@ -34,7 +36,7 @@
 import PostComponent from '@/components/PostComponent.vue';
 
 export default {
-    props: ['server', 'pageId', 'PUBLIC', 'changePage', 'PostComponent'],
+    props: ['server', 'pageId', 'PUBLIC', 'changePage', 'PostComponent', 'created_at'],
     name: 'UserPage',
     components: {
         PostComponent,

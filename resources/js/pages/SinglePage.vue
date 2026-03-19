@@ -10,10 +10,11 @@
                     <p>{{ post.subtitle }}</p>
                 </div>
                 <div class="meta">
-                    <time class="published" datetime="2015-11-01">{{
-                        post.created_at
-                    }}</time>
-                    <a href="#" @click.prevent="changePage('UserPage', post.user_id)" class="author"
+                    <time class="published" datetime="2015-11-01">{{ this.created_at(post.created_at) }}</time>
+                    <a
+                        href="#"
+                        @click.prevent="changePage('UserPage', post.user_id)"
+                        class="author"
                         ><span class="name">{{ post.user.name }}</span
                         ><img :src="PUBLIC + post.user.avatar" alt=""
                     /></a>
@@ -40,8 +41,20 @@
                     </li>
                     <li v-if="isAdmin"><a href="#" class="red">Delete</a></li>
                     <li v-if="isAdmin"><a href="#" class="red">Blocked</a></li>
-                    <li><a href="#" class="icon fa-heart">28</a></li>
-                    <li><a href="#" class="icon fa-comment">128</a></li>
+                    <li>
+                        <a
+                            href="#"
+                            class="icon fa-heart"
+                            :class="{ liked: isLike }"
+                            @click.prevent="likeAdd()"
+                            >{{ post.likes_count }}</a
+                        >
+                    </li>
+                    <li>
+                        <a href="#" class="icon fa-comment">{{
+                            post.comments_count
+                        }}</a>
+                    </li>
                 </ul>
             </footer>
         </article>
@@ -67,8 +80,16 @@
             </section>
             <article class="comment" v-for="value in comments">
                 <div class="comment-autor">
-                    <a href="#"  @click.prevent="changePage('UserPage', post.user_id)"><img :src="PUBLIC + value.user.avatar" /></a>
-                    <a href="#"  @click.prevent="changePage('UserPage', post.user_id)">{{ value.user.name }}</a>
+                    <a
+                        href="#"
+                        @click.prevent="changePage('UserPage', valu.user_id)"
+                        ><img :src="PUBLIC + value.user.avatar"
+                    /></a>
+                    <a
+                        href="#"
+                        @click.prevent="changePage('UserPage', value.user_id)"
+                        >{{ value.user.name }}</a
+                    >
                 </div>
                 <p>
                     {{ value.comment }}
@@ -79,7 +100,7 @@
 </template>
 <script>
 export default {
-    props: ['server', 'pageId', 'PUBLIC', 'changePage', 'isUser'],
+    props: ['server', 'pageId', 'PUBLIC', 'changePage', 'isUser', 'created_at'],
     name: 'SinglePage',
     data() {
         return {
@@ -89,21 +110,41 @@ export default {
             comment: null,
             isAdmin: false,
             isUser: false,
+            isLike: false,
+            message: null,
         };
     },
     mounted() {
         this.getPost();
-        if(localStorage.getItem('token')){
+        if (localStorage.getItem('token')) {
             this.isUser = localStorage.getItem('token');
         }
     },
     methods: {
+        likeAdd() {
+            this.server('like/' + this.pageId)
+                .then((result) => {
+                    if (result.message) {
+                        alert('Вы не авторизованы');
+                    } else {
+                        this.like = result;
+                        this.getPost();
+                    }
+                })
+                .catch((error) => console.error(error));
+        },
         getPost() {
-            this.server((localStorage.getItem('token') ? 'postUser/' : 'post/') + this.pageId)
+            this.server(
+                (localStorage.getItem('token') ? 'postUser/' : 'post/') +
+                    this.pageId,
+            )
                 .then((result) => {
                     this.post = result.post;
                     this.comments = result.comments;
+                    this.isLike = result.isLike;
                     this.isAdmin = result.isAdmin;
+                    console.log(result);
+
                     if (result.id) {
                         this.changePage('SinglePage', result.id);
                     }

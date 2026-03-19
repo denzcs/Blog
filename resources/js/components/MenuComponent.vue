@@ -5,23 +5,10 @@
             <ul class="actions vertical" v-if="!isUser">
                 <li><h3>Login</h3></li>
                 <li>
-                    <form action="?" method="post">
-                        <input
-                            type="text"
-                            name="neme"
-                            placeholder="Username"
-                        /><br />
-                        <input
-                            type="password"
-                            name="neme"
-                            placeholder="Password"
-                        /><br />
-                        <input
-                            type="submit"
-                            class="button big fit"
-                            value="Log In"
-                        />
-                    </form>
+                    <LoginComponent
+                        :server="server"
+                        :successUser="successUser"
+                    />
                 </li>
                 <RegisterComponent
                     :server="server"
@@ -29,7 +16,14 @@
                 />
             </ul>
             <ul v-else>
-                <li><a href="" @click.prevent="changePage('PostAdd')">Создать пост</a></li>
+                <li>
+                    <a href="" @click.prevent="changePage('PostAdd')"
+                        >Создать пост</a
+                    >
+                </li>
+                <li>
+                    <a href="" @click.prevent="logout()">Выйти из аккаунта</a>
+                </li>
             </ul>
         </section>
     </section>
@@ -38,13 +32,15 @@
 <script>
 import PostAdd from '@/pages/PostAdd.vue';
 import RegisterComponent from './RegisterComponent.vue';
+import LoginComponent from './LoginComponent.vue';
 
 export default {
     name: 'MenuComponent',
-    props: ['server', 'isUser', 'successUser', 'changePage'],
+    props: ['server', 'isUser', 'successUser', 'changePage', 'logout'],
     components: {
         RegisterComponent,
         PostAdd,
+        LoginComponent,
     },
 };
 </script>

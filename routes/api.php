@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -15,8 +16,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/post/{post}', [PostController::class, 'update']);
     Route::post('/comment/{post}', [CommentController::class, 'store']);
     Route::get("/postUser/{post}", [PostController::class, "show"]);
+    Route::get('/like/{post}', [LikeController::class, 'store']);
 });
 Route::post("/register", [UserController::class, "register"]);
+Route::post("/login", [UserController::class, "login"]);
 Route::get("/post/{post}", [PostController::class, "show"]);
 Route::get("/posts", [PostController::class, "getPosts"]);
+Route::get("/sideBarPosts", [PostController::class, "getSideBarPosts"]);
 Route::get("/userPage/{user}", [PostController::class, "postUser"]);
