@@ -1,5 +1,5 @@
 <template>
-    <li><h3>Registration</h3></li>
+    <li><h3>Login</h3></li>
     <li>
         <input type="text" placeholder="Username" v-model="username" /><br />
         <p class="red" v-if="errors.username">

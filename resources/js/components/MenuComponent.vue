@@ -3,7 +3,6 @@
         <!-- Actions -->
         <section>
             <ul class="actions vertical" v-if="!isUser">
-                <li><h3>Login</h3></li>
                 <li>
                     <LoginComponent
                         :server="server"
